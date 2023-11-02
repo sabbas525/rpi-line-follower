@@ -85,6 +85,8 @@ class Simulator:
                     robot_x -= magnitude * 0.1
                 elif direction == "right":
                     robot_x += magnitude * 0.1
+                # highlight detected line centroid on frame
+                cv2.circle(frame, (line_x, frame.shape[0] // 2), 8, (0, 255, 0), -1)
             else:
                 direction, magnitude = "straight", 0.0
 
