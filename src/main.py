@@ -15,6 +15,7 @@ def main():
     parser.add_argument("--simulate", action="store_true", help="Enable Pygame visualization")
     parser.add_argument("--log", default=None, help="CSV output path")
     parser.add_argument("--kp", type=float, default=0.5, help="Proportional gain")
+    parser.add_argument("--headless", action="store_true", help="Run without display (logging only)")
     args = parser.parse_args()
 
     controller = Controller(kp=args.kp)
