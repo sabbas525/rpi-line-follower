@@ -6,6 +6,42 @@ A Python-based robot controller that uses computer vision to follow a line. Full
 
 During my bachelor's degree, I built a line-following robot car for the DLD course project using hardware components. This repo is a software simulation of the same concept, built to revisit and extend that work using Python, OpenCV, and Pygame.
 
+## How It Works
+
+```mermaid
+graph LR
+  Video[Video Input] --> Vision[Vision Pipeline]
+  Vision -->|line_x, confidence| Controller[P Controller]
+  Controller -->|direction, magnitude| Simulator[Pygame Display]
+  Controller -->|direction, magnitude| Logger[CSV Logger]
+```
+
+Each frame from the video is processed by the vision pipeline to find the line position. The controller computes a steering command based on how far the line is from the center. The simulator visualizes the robot following the track in real time.
+
+## Vision Pipeline
+
+1. Convert frame to grayscale
+2. Apply Gaussian blur (5×5) to reduce noise
+3. Binary threshold (inverted) — dark line on light background becomes white on black
+4. Find contours in the thresholded image
+5. Select the largest contour by area
+6. Compute centroid using image moments → `line_x`
+7. Confidence = contour area / frame area
+
+## Controller
+
+Uses a simple proportional (P) controller:
+
+```
+error     = line_x - frame_center_x
+magnitude = kp * |error|
+direction = "left"  if error < 0
+          = "right" if error > 0
+          = "straight" if magnitude < threshold
+```
+
+Default `kp = 0.5`. Adjustable via `--kp` flag.
+
 ## Tech Stack
 
 - Python 3.11+, OpenCV, Pygame, NumPy
@@ -67,3 +103,11 @@ rpi-line-follower/
 pip install -r requirements-dev.txt
 PYTHONPATH=. pytest
 ```
+
+## Future Improvements
+
+- Hardware integration with Raspberry Pi + Pi Camera
+- Full PID controller (add integral and derivative terms)
+- Obstacle detection and avoidance
+- Support for curved track detection using Hough transforms
+- Real-time webcam input
